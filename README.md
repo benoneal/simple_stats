@@ -17,8 +17,9 @@ stats.connect({ server: 'http://myappdomain.com/', prefix: 'my_app' });
 stats.increment('initialised');
 // will give a metric in your logs like: "my_app.initialised.count"
 ```
+Stats are queued, even before you connect, so you can start timers and collect metrics immediately, even before you know what your statsd server endpoint is, and then sent after you connect. 
 
-After connecting, all stats are queued and aggregated to be sent every 2.5 seconds. If you need to send queued stats immediately (such as before a page transition or in window.onunload), then call the "flush" method:
+Once connected, all stats are aggregated and sent every 2.5 seconds. If you need to send queued stats immediately (such as before a page transition or in window.onunload), then call the "flush" method:
 ```
 window.onunload = stats.flush
 // or
