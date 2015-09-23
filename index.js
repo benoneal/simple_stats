@@ -56,7 +56,7 @@ function trailingSlash(url) {
 module.exports = {
   connect: function(options) {
     server = trailingSlash(options.server) || server;
-    namespace = options.prefix ? options.prefix += '.' || namespace;
+    namespace = options.prefix ? options.prefix += '.' : namespace;
     setInterval(sendQueue, options.interval || POST_INTERVAL);
   },
 
