@@ -1,7 +1,7 @@
 {
   "author": "Ben O'Neal",
   "name": "simple_stats",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Simple client-side statsd logging",
   "main": "index.js",
   "engines": {

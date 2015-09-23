@@ -58,7 +58,7 @@ function addToQueue(array) {
 function prefix(array) {
   array.forEach(function(stat) {
     if (stat instanceof Array && typeof stat[1] === 'string') {
-      stat[1] = prefix + stat[1];
+      stat[1] = namespace + stat[1];
     }
   });
   return array;
