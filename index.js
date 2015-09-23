@@ -2,6 +2,16 @@
 
 'use strict';
 
+if (!('forEach' in Array.prototype)) {
+  Array.prototype.forEach = function(action, that) {
+    for (var i = 0, n = this.length; i < n; i++) {
+      if (i in this) {
+        action.call(that, this[i], i, this);
+      }
+    }
+  };
+}
+
 var POST_INTERVAL = 2500;
 var namespace = '';
 var server = 'http://localhost:8127/';
@@ -26,7 +36,7 @@ function sendQueue() {
   var head = document.getElementsByTagName('head')[0];
   if (queue.length > 0) {
     var tag = document.createElement('script');
-    tag.src = server + JSON.stringify(queue);
+    tag.src = server + JSON.stringify(prefix(queue));
     tag.onload = tag.onreadystatechange = function() {
       if (!this.readyState || this.readyState === 'loaded' || this.readyState === 'complete') {
         head.removeChild(tag);
@@ -41,12 +51,17 @@ function fromNow(date) {
   return new Date() - date;
 }
 
-function addToQueue(arr) {
-  queue.push(compact(arr));
+function addToQueue(array) {
+  queue.push(compact(array));
 }
 
-function prefix(str) {
-  return prefix + str;
+function prefix(array) {
+  array.forEach(function(stat) {
+    if (stat instanceof Array && typeof stat[1] === 'string') {
+      stat[1] = prefix + stat[1];
+    }
+  });
+  return array;
 }
 
 function trailingSlash(url) {
@@ -61,28 +76,28 @@ module.exports = {
   },
 
   increment: function(stat, sampleRate) {
-    addToQueue(['i', prefix(stat), sampleRate]);
+    addToQueue(['i', stat, sampleRate]);
   },
 
   decrement: function(stat, sampleRate) {
-    addToQueue(['d', prefix(stat), sampleRate]);
+    addToQueue(['d', stat, sampleRate]);
   },
 
   gauge: function(stat, value, sampleRate) {
-    addToQueue(['g', prefix(stat), value, sampleRate]);
+    addToQueue(['g', stat, value, sampleRate]);
   },
 
   timing: function(stat, time, sampleRate) {
     if (typeof time === 'number') {
-      return addToQueue(['t', prefix(stat), time, sampleRate]);
+      return addToQueue(['t', stat, time, sampleRate]);
     }
     if (time instanceof Date) {
-      return addToQueue(['t', prefix(stat), fromNow(time), sampleRate]);
+      return addToQueue(['t', stat, fromNow(time), sampleRate]);
     }
     if (typeof time === 'function') {
       var start = new Date();
       time();
-      addToQueue(['t', prefix(stat), fromNow(start), sampleRate]);
+      addToQueue(['t', stat, fromNow(start), sampleRate]);
     }
   },
 
@@ -91,7 +106,7 @@ module.exports = {
 
     return {
       stop: function() {
-        addToQueue(['t', prefix(stat), fromNow(start), sampleRate])
+        addToQueue(['t', stat, fromNow(start), sampleRate])
       }
     }
   },
