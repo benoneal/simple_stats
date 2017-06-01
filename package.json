@@ -4,10 +4,6 @@
   "version": "1.0.3",
   "description": "Simple client-side statsd logging",
   "main": "index.js",
-  "engines": {
-    "node": "^6.0.0",
-    "npm": "2.5.1"
-  },
   "keywords": [
     "statsd",
     "node",
